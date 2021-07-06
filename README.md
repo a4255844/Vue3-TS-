@@ -1,24 +1,3 @@
-# zheye
-
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 配置vetur,开启配置
+    开启Experimental: Template Interpolation Service配置,能是vue模板属性自动补全,提示更好
+     
