@@ -18,12 +18,12 @@ type MittEvent = {
 }
 export const emitter = mitt<MittEvent>()
 export default defineComponent({
-  emits: ['from-submit'],
+  emits: ['form-submit'],
   setup (props, context) {
     let funcArr: ValidateFunc[] = []
     const submitHandler = () => {
       const result = funcArr.map(func => func()).every(func => func)
-      context.emit('from-submit', result)
+      context.emit('form-submit', result)
     }
     const callback = (func: ValidateFunc) => {
       // console.log(func)

@@ -2,6 +2,7 @@
   <div class="validate-input-container pb-3">
     <!-- $attrs: 获取组件context内的非props标签属性对象,并使用v-bind添加到input标签上 -->
     <input
+      v-if="tag === 'input'"
       type="text" class="form-control"
       :class="{'is-invalid': inputRef.error}"
       :value="inputRef.val"
@@ -9,6 +10,16 @@
       @input="updateInput"
       v-bind="$attrs"
     >
+    <textarea  rows="10"
+      v-else
+      type="text" class="form-control"
+      :class="{'is-invalid': inputRef.error}"
+      :value="inputRef.val"
+      @blur="validateInput"
+      @input="updateInput"
+      v-bind="$attrs"
+    >
+    </textarea>
     <span v-show="inputRef.error" class="invalid-feedback">{{inputRef.message}}</span>
   </div>
 </template>
@@ -23,6 +34,7 @@ interface RuleProp {
   message: string
 }
 export type RulesProp = RuleProp[]
+export type tagType = 'input' | 'textarea'
 
 export default defineComponent({
   props: {
@@ -30,7 +42,11 @@ export default defineComponent({
       type: Array as PropType<RulesProp>
     },
     // 给组件绑定v-model: 1.组件接收一个modelValue的props属性,2.发送事件,update:modelValue
-    modelValue: String
+    modelValue: String,
+    tag: {
+      type: String as PropType<tagType>,
+      default: 'input'
+    }
   },
   inheritAttrs: false, // 禁止attribute继承
   setup (props, context) {
@@ -46,7 +62,7 @@ export default defineComponent({
     const updateInput = (event: KeyboardEvent) => {
       const targetValue = (event.target as HTMLInputElement).value
       inputRef.val = targetValue
-      context.emit('update:modelValue', inputRef.error)
+      context.emit('update:modelValue', targetValue)
     }
     const validateInput = () => { // 验证回调
       if (props.rules) {
