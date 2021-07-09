@@ -20,6 +20,10 @@ export interface PostProps {
   column: string;
 }
 
+export interface GlobalErrorProps {
+  status: boolean;
+  message?: string;
+}
 
 // export const testData: ColumnProps[] = [
 //   {

@@ -18,9 +18,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted, watch } from 'vue'
 import GlobalHeader from './components/GlobalHeader.vue'
 import Loader from '@/components/Loader.vue'
+// import Message from '@/components/Message.vue'
+import createMessage from '@/components/createMessage'
 import { useStore } from 'vuex'
 import { GlobalDataProps } from '@/store'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -34,6 +36,21 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>()
     const user = computed(() => store.state.user)
     const isLoading = computed(() => store.state.isLoading)
+    const error = computed(() => store.state.error)
+    /* 监视error状态的变化, 创建全局提示的组件 */
+    watch(() => error.value.status, () => {
+      const { status, message } = error.value
+      if (status && message) {
+        createMessage(message, 'error')
+      }
+    })
+    onMounted(() => {
+      setTimeout(() => { // 不加定时器,不走拦截器,因为axios的全局配置还未生效
+        if (store.state.token && !user.value.isLogin) {
+          store.dispatch('fetchUserInfo')
+        }
+      }, 0)
+    })
     return {
       user,
       isLoading

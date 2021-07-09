@@ -20,9 +20,9 @@
 import { defineComponent, ref } from 'vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import createMessage from '@/components/createMessage'
 export default defineComponent({
   name: 'App',
   components: {
@@ -46,8 +46,16 @@ export default defineComponent({
     const onFormSubmit = (result: boolean) => {
       console.log('result:', result)
       if (result) {
-        store.commit('login')
-        router.push('/')
+        const loginData = {
+          email: emailVal.value,
+          password: pwdVal.value
+        }
+        store.dispatch('loginAndFetch', loginData).then(() => {
+          createMessage('登陆成功,2秒后跳转至首页', 'success')
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
+        })
       }
     }
 
