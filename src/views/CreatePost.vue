@@ -1,6 +1,28 @@
 <template>
   <div class="create-post-page">
     <h4>新建文章</h4>
+    <Uploader
+      action="/upload"
+      :beforeUpload="uploadCheck"
+      @file-uploaded="onFileUploaded"
+      class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
+    >
+      <h2>点击上传头图</h2>
+      <template #loading>
+        <div class="d-flex">
+          <div class="spinner-border text-secondary" role="status">
+            <span style="marign-left 50px" class="sr-only">Loading...</span>
+          </div>
+          <h2>正在上传</h2>
+        </div>
+      </template>
+      <template #uploaded="dataProps" >
+        <img :src="dataProps.uploadedData.data.url">
+      </template>
+      <template #error>
+        上传失败
+      </template>
+    </Uploader>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -36,17 +58,21 @@ import { defineComponent, ref } from 'vue'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 import { useStore } from 'vuex'
-import { useRoute, useRouter } from 'vue-router'
-import { GlobalDataProps } from '@/store'
-import { PostProps } from '@/testData'
+import { useRouter } from 'vue-router'
+import Uploader from '@/components/Uploader.vue'
+import createMessage from '@/components/createMessage'
+import { beforeUploadCheck } from '@/helper'
+import { RespProps, ImageProps, PostProps, GlobalDataProps } from '@/testData'
 export default defineComponent({
   components: {
     ValidateForm,
-    ValidateInput
+    ValidateInput,
+    Uploader
   },
   setup () {
     const titleVal = ref('')
     const contentVal = ref('')
+    let imageId = ''
     const titleRules: RulesProp = [
       { type: 'required', message: '文章标题不能为空' }
     ]
@@ -57,30 +83,65 @@ export default defineComponent({
     const router = useRouter()
     const onFormSubmit = (result:boolean) => {
       if (result) {
-        const { column } = store.state.user
+        const { column, _id } = store.state.user
         if (!column) return
         const newPost: PostProps = {
-          _id: Date.now() + '',
           title: titleVal.value,
           content: contentVal.value,
-          createdAt: new Date().toLocaleString(),
-          column: '1321321321'
+          column,
+          author: _id
         }
-        store.commit('creaePost', newPost)
-        router.push(`/column/${column}`)
+        if (imageId) {
+          newPost.image = imageId
+        }
+        store.dispatch('createPost', newPost).then(() => {
+          createMessage('添加文章成功,2秒后跳转至该栏目', 'success')
+          setTimeout(() => {
+            router.push(`/column/${column}`)
+          }, 2000)
+        })
       }
+    }
+    const uploadCheck = (file: File) => {
+      const result = beforeUploadCheck(file, { format: ['image/jpeg', 'image/png'], size: 0.2 })
+      if (!result.passed) {
+        if (result.error === 'size') {
+          createMessage('图片大小不能超过0.2MB', 'error')
+        }
+        if (result.error === 'format') {
+          createMessage('图片仅支持jpeg/png格式!', 'error')
+        }
+      }
+      return result.passed
+    }
+    const onFileUploaded = (rowData: RespProps<ImageProps>) => {
+      if (rowData.data._id) {
+        imageId = rowData.data._id
+      }
+      createMessage(`上传成功${rowData.data._id}`, 'success')
     }
     return {
       titleRules,
       contentRules,
       titleVal,
       contentVal,
-      onFormSubmit
+      onFormSubmit,
+      uploadCheck,
+      onFileUploaded
     }
   }
 })
 </script>
 
-<style lang="css" scoped>
-
+<style lang="css">
+.create-post-page .file-upload-container {
+    height: 200px;
+    cursor: pointer;
+    height: hidden;
+}
+.create-post-page .file-upload-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 </style>

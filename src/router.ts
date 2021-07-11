@@ -6,6 +6,8 @@ import ColumnDetail from '@/views/ColumnDetail.vue'
 import CreatePost from '@/views/CreatePost.vue'
 import Signup from '@/views/Signup.vue'
 import store from '@/store'
+import createMessage from '@/components/createMessage'
+import PostDetail from '@/views/PostDetail.vue'
 const routerHistory = createWebHistory()
 const router = createRouter({
   history: routerHistory,
@@ -37,19 +39,45 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: Signup
+    },
+    {
+      path: '/posts/:id',
+      name: 'post',
+      component: PostDetail
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const { redirectAlreadyLogin, requiredLogin } = to.meta
-  const { isLogin } = store.state.user
-  if (!isLogin && requiredLogin) {
-    next('/login')
-  } else if (redirectAlreadyLogin && isLogin) {
-    next('/')
+  const { user, token } = store.state
+  if (user.isLogin) {
+    if (redirectAlreadyLogin) {
+      next('/')
+    } else {
+      next()
+    }
   } else {
-    next()
+    if (token) {
+      store.dispatch('fetchUserInfo').then(() => {
+        if (redirectAlreadyLogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }).catch((e) => {
+        console.log(e)
+        createMessage('token验证失败,请重新登录', 'error')
+        store.commit('loginout')
+        next('/login')
+      })
+    } else {
+      if (requiredLogin) {
+        next('/login')
+      } else {
+        next()
+      }
+    }
   }
 })
 export default router

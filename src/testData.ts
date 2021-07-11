@@ -4,6 +4,11 @@ export interface ImageProps {
   createdAt?: string;
   fitUrl?: string;
 }
+export interface RespProps<P = {}> {
+  code: number;
+  msg: string;
+  data: P;
+}
 export interface ColumnProps {
   _id: string;
   title: string;
@@ -11,18 +16,40 @@ export interface ColumnProps {
   description: string;
 }
 export interface PostProps {
-  _id: string;
+  _id?: string;
   title: string;
   excerpt?: string;
   content: string;
-  image?: ImageProps;
-  createdAt: string;
+  image?: ImageProps | string;
+  createdAt?: string;
   column: string;
+  author?: string;
+  isHTML?: boolean;
 }
-
+export interface ListProps<P> {
+  [id: string]: P;
+}
 export interface GlobalErrorProps {
   status: boolean;
   message?: string;
+}
+export interface UserProps {
+  isLogin: boolean;
+  nickName?: string;
+  _id?: string;
+  column?: string;
+  email?: string;
+  avatar?: ImageProps;
+  description?: string;
+}
+
+export interface GlobalDataProps {
+  error: GlobalErrorProps;
+  token: string;
+  isLoading: boolean;
+  columns: ColumnProps[];
+  posts: { data: ListProps<PostProps>; loadedColumns: string[] };
+  user: UserProps;
 }
 
 // export const testData: ColumnProps[] = [

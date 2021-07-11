@@ -11,7 +11,6 @@ app.mount('#app')
 axios.defaults.baseURL = '/api'
 
 axios.interceptors.request.use(config => {
-  console.log('请求拦截器')
   store.commit('setError', { status: false, message: '' })
   store.commit('setLoading', true)
   const token = store.state.token // 从vuex内取出token
@@ -32,5 +31,8 @@ axios.interceptors.response.use(response => {
   const { error } = e.response.data
   store.commit('setError', { status: true, message: error })
   store.commit('setLoading', false)
+  if (e.response.data.code === 422) { // 处理图片过大异常
+    return e
+  }
   return new Promise(() => { console.log('') }) // 中断promise链,语法检测报错
 })

@@ -24,7 +24,7 @@ import Loader from '@/components/Loader.vue'
 // import Message from '@/components/Message.vue'
 import createMessage from '@/components/createMessage'
 import { useStore } from 'vuex'
-import { GlobalDataProps } from '@/store'
+import { GlobalDataProps } from '@/testData'
 import 'bootstrap/dist/css/bootstrap.min.css'
 export default defineComponent({
   name: 'App',
@@ -44,13 +44,13 @@ export default defineComponent({
         createMessage(message, 'error')
       }
     })
-    onMounted(() => {
-      setTimeout(() => { // 不加定时器,不走拦截器,因为axios的全局配置还未生效
-        if (store.state.token && !user.value.isLogin) {
-          store.dispatch('fetchUserInfo')
-        }
-      }, 0)
-    })
+    // onMounted(() => {
+    //   setTimeout(() => { // 不加定时器,不走拦截器,因为axios的全局配置还未生效
+    //     if (store.state.token && !user.value.isLogin) {
+    //       store.dispatch('fetchUserInfo')
+    //     }
+    //   }, 0)
+    // })
     return {
       user,
       isLoading

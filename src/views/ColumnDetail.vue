@@ -9,7 +9,7 @@
                 <p class="text-muted">{{column.description}}</p>
             </div>
         </div>
-        <post-list :posts="posts"></post-list>
+        <post-list :list="posts"></post-list>
     </div>
 </template>
 
@@ -17,9 +17,8 @@
 import { computed, defineComponent, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { GlobalDataProps } from '@/store'
 import PostList from '@/components/PostList.vue'
-import { ColumnProps } from '@/testData'
+import { ColumnProps, GlobalDataProps } from '@/testData'
 export default defineComponent({
   components: {
     PostList
