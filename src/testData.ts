@@ -23,7 +23,7 @@ export interface PostProps {
   image?: ImageProps | string;
   createdAt?: string;
   column: string;
-  author?: string;
+  author?: string | UserProps;
   isHTML?: boolean;
 }
 export interface ListProps<P> {
@@ -42,13 +42,16 @@ export interface UserProps {
   avatar?: ImageProps;
   description?: string;
 }
-
+export interface ColumnPost {
+  total: number;
+  currentPage: number;
+}
 export interface GlobalDataProps {
   error: GlobalErrorProps;
   token: string;
   isLoading: boolean;
-  columns: ColumnProps[];
-  posts: { data: ListProps<PostProps>; loadedColumns: string[] };
+  columns: { data: ListProps<ColumnProps>, total: number, currentPage: number };
+  posts: { data: ListProps<PostProps>, loadedColumns: { [id: string] : ColumnPost } };
   user: UserProps;
 }
 

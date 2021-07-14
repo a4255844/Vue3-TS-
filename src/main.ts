@@ -9,6 +9,7 @@ app.use(store)
 app.mount('#app')
 
 axios.defaults.baseURL = '/api'
+axios.defaults.timeout = 5000
 
 axios.interceptors.request.use(config => {
   store.commit('setError', { status: false, message: '' })

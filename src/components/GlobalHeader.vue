@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
-    <a class="navbar-brand" href="#">之乎者也专栏</a>
+    <router-link class="navbar-brand" to="/">之乎者也专栏</router-link>
     <ul v-if="!user.isLogin" class="list-inline mb-0">
       <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">登录</router-link></li>
       <li class="list-inline-item"><router-link to="/signup" class="btn btn-outline-light my-2">注册</router-link></li>
@@ -10,6 +10,9 @@
         <Dropdown :title="`欢迎 ${user.nickName}`">
           <DropdownItem >
             <router-link to="/createPost" class="dropdown-item">新建文章</router-link>
+          </DropdownItem>
+          <DropdownItem >
+            <router-link :to="`/column/${user.column}`" class="dropdown-item">我的频道</router-link>
           </DropdownItem>
           <DropdownItem disabled>
             <a href="#" class="dropdown-item">编辑资料</a>

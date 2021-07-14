@@ -2,13 +2,15 @@
   <li
     class="dropdown-options"
     :class="{'is-disabled': disabled}"
+    @click="closeAfterClick"
   >
     <slot></slot>
   </li>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
+import { emitter } from '@/components/Dropdown.vue'
 export default defineComponent({
   props: {
     disabled: { // 是否禁用
@@ -16,14 +18,12 @@ export default defineComponent({
       default: false
     }
   },
-  setup () {
-    const isShowDropdown = ref(false)
-    const toggleOpen = () => {
-      isShowDropdown.value = !isShowDropdown.value
+  setup (props) {
+    const closeAfterClick = () => {
+      emitter.emit('closeAfterClick', props.disabled)
     }
     return {
-      isShowDropdown,
-      toggleOpen
+      closeAfterClick
     }
   }
 })

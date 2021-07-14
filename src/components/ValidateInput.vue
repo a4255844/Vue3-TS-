@@ -5,18 +5,16 @@
       v-if="tag === 'input'"
       type="text" class="form-control"
       :class="{'is-invalid': inputRef.error}"
-      :value="inputRef.val"
       @blur="validateInput"
-      @input="updateInput"
+      v-model="inputRef.val"
       v-bind="$attrs"
     >
     <textarea  rows="10"
       v-else
       type="text" class="form-control"
       :class="{'is-invalid': inputRef.error}"
-      :value="inputRef.val"
       @blur="validateInput"
-      @input="updateInput"
+      v-model="inputRef.val"
       v-bind="$attrs"
     >
     </textarea>
@@ -25,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, onMounted } from 'vue'
+import { defineComponent, PropType, reactive, onMounted, computed } from 'vue'
 import { emitter } from './ValidateForm.vue'
 const emailReg = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 const pwdReg = /^[a-z0-9]\d{5,11}$/
@@ -39,9 +37,7 @@ export type tagType = 'input' | 'textarea'
 
 export default defineComponent({
   props: {
-    rules: {
-      type: Array as PropType<RulesProp>
-    },
+    rules: Array as PropType<RulesProp>,
     // 给组件绑定v-model: 1.组件接收一个modelValue的props属性,2.发送事件,update:modelValue
     modelValue: String,
     tag: {
@@ -55,16 +51,23 @@ export default defineComponent({
       emitter.emit('form-item-created', validateInput)
     })
     const inputRef = reactive({
-      val: props.modelValue || '',
+      val: computed<string>({
+        get () {
+          return props.modelValue || ''
+        },
+        set (newVal) {
+          context.emit('update:modelValue', newVal)
+        }
+      }),
       error: false,
       message: ''
     })
     // console.log(context.attrs) // 获取标签上的非props属性
-    const updateInput = (event: KeyboardEvent) => {
-      const targetValue = (event.target as HTMLInputElement).value
-      inputRef.val = targetValue
-      context.emit('update:modelValue', targetValue)
-    }
+    // const updateInput = (event: KeyboardEvent) => {
+    //   const targetValue = (event.target as HTMLInputElement).value
+    //   inputRef.val = targetValue
+    //   context.emit('update:modelValue', targetValue)
+    // }
     const validateInput = () => { // 验证回调
       if (props.rules) {
         const allPassed = props.rules.every(rule => { // 全部验证通过返回true,有一个失败返回false
@@ -95,8 +98,7 @@ export default defineComponent({
     }
     return {
       inputRef,
-      validateInput,
-      updateInput
+      validateInput
     }
   }
 })

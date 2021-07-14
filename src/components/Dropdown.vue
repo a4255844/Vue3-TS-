@@ -10,6 +10,11 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
 import useClickOutside from '@/hooks/useClickOutside'
+import mitt from 'mitt'
+type MittEvent = {
+  'closeAfterClick': boolean; // 指定对应事件回调函数的参数的泛型
+}
+export const emitter = mitt<MittEvent>()
 export default defineComponent({
   props: {
     title: {
@@ -28,6 +33,9 @@ export default defineComponent({
       if (isClickOutside.value && isShowDropdown.value) {
         isShowDropdown.value = false
       }
+    })
+    emitter.on('closeAfterClick', (status) => {
+      isShowDropdown.value = status
     })
     return {
       isShowDropdown,
